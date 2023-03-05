@@ -8,7 +8,7 @@
 
 Video2gif是一个支持多线程处理的GIF转码工具，借助FFmpeg开源音视频框架，它可以将各种封装及编码格式的视频文件快速转换为高质量GIF动图，同时支持缩放、倍速、转码质量调节等。
 
-若您想获取已经编译好可以直接使用的程序，请点击[Release]()下载，并跳过下面环境配置和安装部分的内容。
+若您想获取已经编译好可以直接使用的程序，请点击[Release](https://github.com/clostou/video2gif/releases/tag/Release)下载，并跳过下面环境配置和安装部分的内容，直接阅读[使用说明](https://github.com/clostou/video2gif/tree/Release#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8)部分。
 
 <br/>
 
