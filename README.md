@@ -115,6 +115,8 @@ Video2gif是一个支持多线程处理的GIF转码工具，借助FFmpeg开源音视频框架，它可以将各
     - av1
     - h264
     - hevc
+    - mpeg4
+    - mpegvideo
     - rawvideo
     - vp8
     - vp9
