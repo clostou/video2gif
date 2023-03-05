@@ -1,0 +1,23 @@
+#include <windows.h>
+
+id ICON "video2gif.ico"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,1,0,0
+BEGIN
+	BLOCK"StringFileInfo"
+	BEGIN
+		BLOCK"080404b0"
+		BEGIN
+            VALUE "FileDescription", "GIF转码工具"
+            VALUE "FileVersion", "0.1.0.0"
+            VALUE "InternalName", "video2gif.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2023 Developed by 仰望"
+            VALUE "OriginalFilename", "video2gif.exe"
+		END
+	END
+	BLOCK"VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x804, 1200
+	END
+END

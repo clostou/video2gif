@@ -1,0 +1,14 @@
+prefix=/local64/ffmpeg
+exec_prefix=${prefix}
+libdir=/local64/ffmpeg/lib
+includedir=/local64/ffmpeg/include
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 60.2.100
+Requires: libavutil >= 58.1.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavcodec -lm -latomic -lole32 -luser32
+Libs.private: 
+Cflags: -I${includedir}
