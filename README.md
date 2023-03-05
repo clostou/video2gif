@@ -1,2 +1,124 @@
-# video2gif
-å€ŸåŠ©FFmpegæ¡†æ¶å®ç°çš„è§†é¢‘è½¬GIFåŠ¨å›¾ï¼Œæ”¯æŒå¤šçº¿ç¨‹æ»¤é•œå¤„ç†ã€è½¬ç å‚æ•°è®¾ç½®ã€‚
+# GIF×ªÂë¹¤¾ß£ºVideo2gif
+
+<br/>
+
+****
+## ¼ò½é
+****
+
+Video2gifÊÇÒ»¸öÖ§³Ö¶àÏß³Ì´¦ÀíµÄGIF×ªÂë¹¤¾ß£¬½èÖúFFmpeg¿ªÔ´ÒôÊÓÆµ¿ò¼Ü£¬Ëü¿ÉÒÔ½«¸÷ÖÖ·â×°¼°±àÂë¸ñÊ½µÄÊÓÆµÎÄ¼ş¿ìËÙ×ª»»Îª¸ßÖÊÁ¿GIF¶¯Í¼£¬Í¬Ê±Ö§³ÖËõ·Å¡¢±¶ËÙ¡¢×ªÂëÖÊÁ¿µ÷½ÚµÈ¡£
+
+ÈôÄúÏë»ñÈ¡ÒÑ¾­±àÒëºÃ¿ÉÒÔÖ±½ÓÊ¹ÓÃµÄ³ÌĞò£¬Çëµã»÷[Release]()ÏÂÔØ£¬²¢Ìø¹ıÏÂÃæ»·¾³ÅäÖÃºÍ°²×°²¿·ÖµÄÄÚÈİ¡£
+
+<br/>
+
+****
+## »·¾³ÅäÖÃ£¨WindowsÆ½Ì¨£©
+****
+
+**1.°²×°MSYS2**
+
+°²×°°ü¿ÉÒÔÖ±½ÓÔÚMSYS2¹ÙÍøÏÂÔØ£º[https://www.msys2.org](https://www.msys2.org/)
+
+**2.°²×°MinGW¼°ÆäËû¿ª·¢¹¤¾ß**
+
+´ò¿ª`MSYS2 MINGW64`£¬ÔËĞĞÏÂÁĞÃüÁî£º
+
+    pacman -S mingw-w64-x86_64-toolchain make git
+
+ÔÙÒÀ´ÎÊäÈë£º
+
+    git -v
+    make -v
+    gcc --version
+
+Èç¹ûÄÜÏÔÊ¾³ö°æ±¾ĞÅÏ¢£¬ËµÃ÷°²×°³É¹¦¡£
+
+<br/>
+
+****
+## ³ÌĞò°²×°
+****
+
+Ê×ÏÈÏÂÔØ²¢½âÑ¹ÏîÄ¿£¬»òÖ±½ÓÊ¹ÓÃ`git`ÃüÁî¿ËÂ¡£º
+
+    git clone https://github.com/clostou/video2gif.git
+
+È»ºó¼ÌĞøÔÚ`MSYS2 MINGW64`ÖĞÊäÈë£º
+
+    cd video2gif
+    make
+
+±àÒëÁ´½Ó³É¹¦ºó£¬¾ÍÄÜÔÚ`video2gif/bin`Ä¿Â¼ÏÂ¿´µ½Éú³ÉµÄ³ÌĞò`video2gif.exe`¡£
+
+<br/>
+
+****
+## ¿ªÊ¼Ê¹ÓÃ
+****
+
+Ö±½Ó½«ĞèÒª×ªÎªGIFµÄÊÓÆµÎÄ¼şÍÏµ½³ÌĞòÉÏ£¬¼´¿É¿ªÊ¼×ªÂë¡£
+
+ÔÚ³ÌĞòÊ×´ÎÔËĞĞºó£¬»áÔÚÍ¬Ä¿Â¼ÏÂÉú³ÉÒ»¸öÅäÖÃÎÄ¼ş`video2gif.ini`¡£¸ù¾İĞèÒªĞŞ¸Ä²¢±£´æºó£¬ÏÂ´Î×ªÂë¾Í»á°´ÕÕĞÂÅäÖÃÖ´ĞĞ¡£
+
+¸÷²ÎÊıµÄÏêÏ¸ËµÃ÷¼ûÏÂ£º
+
+>* **Image Scale** --- Í¼Ïñ(·Ö±æÂÊ)Ëõ·Å¡£±ÈÈçÖµÎªx0.5Ê±£¬Êä³öGIFÍ¼ÏñµÄ¿í¸ß³ß´ç¾ùÊÇÔ­ÊÓÆµµÄÒ»°ë¡£
+>* **Play Speed** --- ÊÓÆµ±¶ËÙ¡£±ÈÈçÖµÎªx2.0Ê±£¬Êä³öGIFµÄ²¥·ÅËÙ¶ÈÊÇÔ­ÊÓÆµµÄ2±¶¡£
+>* **Frame Rate** --- ÊÓÆµÖ¡ÂÊ¡£ÆäÖµÔ½´ó£¬»­ÃæÔ½Á¬¹á¡¢²úÉúµÄÎÄ¼şÔ½´ó£¬µ«²»»á³¬¹ıÔ­ÊÓÆµµÄÖ¡ÂÊ¡£
+>* **Color Depth** --- É«²ÊÉî¶È¡£¼´´æ´¢Í¼ÏñÏñËØÑÕÉ«µÄÊı¾İ¿í¶È£¬×î´óÎª8¡£
+>* **Thread Count** --- ×ªÂëÏß³ÌÊı¡£×¢ÒâÖµÎª1Ê±»á×Ô¶¯¿ªÆôµ÷É«°å¸´ÓÃ£¬ÕâÓĞÀûÓÚÉú³É¸üĞ¡µÄGIFÎÄ¼ş£¬µ«¿ÉÄÜ»áÊ¹»­Ãæ²úÉúè¦´Ã¡£
+
+<br/>
+
+****
+## ÆäËû
+****
+
+Õâ¸öÏîÄ¿ÊÇÎÒµÄ¶ÔFFmpeg APIÊ¹ÓÃµÄµÚ¶ş´ÎÊµÕ½£¬µÚÒ»´ÎÊÇÖ®Ç°×öµÄÒ»¸ö¿ÉÒÔÌáÈ¡¹Ø¼üÖ¡µÄĞ¡³ÌĞò¡£Í¬Ê±×÷Õß±¾ÈË¶Ô`C/C++`Ò²»¹´¦ÓÚÑ§Ï°½×¶Î£¬ÈôÓĞ²»×ãÖ®´¦»¹Íû²»Áß´Í½Ì£¬µ±È»Ò²»¶Ó­Ë®Æ½Ïà½ü¡¢¸Õ¿ªÊ¼½Ó´¥µÄÅóÓÑÓëÎÒÏà»¥½»Á÷Ñ§Ï°¡£
+
+ÁªÏµÓÊÏä£º*guoqing2234@gmail.com*
+
+<br/>
+
+****
+## ¸½£ºFFmpegµÄ±àÒë
+****
+
+Ò»°ãµÄ×ö·¨ÊÇÖ±½Ó´ÓFFmpeg¹ÙÍøÏÂÔØÔ´Âë£¬²¢Ê¹ÓÃÇ°Ãæ´î½¨ºÃµÄ»·¾³½øĞĞ±àÒë¡£²»¹ıÕâÀï¸üÍÆ¼ö´ÓÍ·¿ªÊ¼¾ÍÊ¹ÓÃÏîÄ¿ [m-ab-s/media-autobuild_suite](https://github.com/m-ab-s/media-autobuild_suite)£¬¸Ã½Å±¾¹¤¾ßÄÚÖÃÁËMingw-w64±àÒë»·¾³£¬ÇÒÄÜ×Ô¶¯°²×°¸÷ÖÖÒôÊÓÆµÒÀÀµ¿â£¬¼õÇá¸ºµ£¡£
+
+ÍêÕûµÄFFmpegËù°üº¬µÄ´ó¶àÊı×é¼şÔÚÊÓÆµ×ªGIFÖĞ¶¼ÓÃ²»ÉÏ£¬ÁíÍâÎªÁË½øÒ»²½¼õĞ¡³ÌĞòµÄ´óĞ¡£¬ÕâÀï½öÆôÓÃÁË¶Ô²¿·Ö³£ÓÃ¸ñÊ½µÄÖ§³Ö¡£¾ßÌåµÄconfigureÈçÏÂ£º
+
+    ./configure --prefix=/local64/video2gif --pkg-config=pkgconf --cc='ccache gcc' --cxx='ccache g++' --ld='ccache g++' --extra-cxxflags=-fpermissive --extra-cflags=-Wno-int-conversion --arch=x86_64 --enable-gpl --enable-nonfree --disable-programs --disable-autodetect --disable-debug --disable-everything --enable-libx264 --enable-libx265 --enable-libaom --enable-libvpx --enable-demuxer=avi --enable-demuxer=flv --enable-demuxer=matroska --enable-demuxer=mov --enable-demuxer=mpegps --enable-demuxer=mpegts --enable-decoder=mpeg4 --enable-decoder=mpegvideo --enable-decoder=h264 --enable-decoder=hevc --enable-decoder=av1 --enable-decoder=vp8 --enable-decoder=vp9 --enable-decoder=rawvideo --enable-encoder=gif --enable-muxer=gif --enable-filter=scale --enable-filter=split --enable-filter=palettegen --enable-filter=paletteuse --enable-filter=movie --enable-filter=overlay --enable-protocols --disable-network --disable-doc
+
+ÅäÖÃ½áÊøºó¿ªÊ¼±àÒëFFmpeg¡£ÏëÒª¼õÉÙ±àÒëÊ±¼ä£¬¾ÍÒ»¶¨²»ÒªÍü¼ÇÓÃ`-j`Ñ¡ÏîÖ¸¶¨¸´ÊıÏß³Ì£º
+
+    make -j8
+
+×îºó¸´ÖÆÖÁ°²×°Ä¿Â¼`/local64/video2gif`£º
+
+    make install
+
+È»ºó¾ÍÄÜÔÚ`/local64/video2gif/lib`Ä¿Â¼ÏÂ¿´µ½Ğ¡ÌåÁ¿µÄFFmpeg¾²Ì¬¿âÎÄ¼şÁË¡£
+
+ÏÂÃæÊÇÆôÓÃÖ§³ÖµÄ½â·â×°Æ÷¼°½âÂëÆ÷£º
+
+- demuxers:
+    - avi
+    - flv
+    - matroska (mkv)
+    - mpegps
+    - mpegts
+    - mov (mp4)
+
+- decoders:
+    - av1
+    - h264
+    - hevc
+    - rawvideo
+    - vp8
+    - vp9
+
+<br/>
+
+
