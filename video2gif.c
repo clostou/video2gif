@@ -4,13 +4,13 @@
 //  --- video2gif.c ---
 //
 //
-//  Function£ºConvert the video to GIF format, using FFmpeg API.
+//  Functionï¼šConvert the video to GIF format, using FFmpeg API.
 //
 //  Author: Yangwang (GitHub@clostou)
 //
 //  Creation Date: 2023/3/5
 //
-//  Last Modified: 2023/3/5
+//  Last Modified: 2023/3/26
 //
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -30,12 +30,12 @@
 #define MAX_PATH_LENGTH 256
 #define MAX_FILTER_LENTH 128
 #define FILTER_N 3
-#define WAIT_TIME 0.1
+#define WAIT_TIME 1
 //#define DEBUG
 
 
 /**
-* °üº¬ÎÄ¼ş¸ñÊ½Óë±à½âÂëÏà¹ØĞÅÏ¢µÄ½á¹¹Ìå¡£
+* åŒ…å«æ–‡ä»¶æ ¼å¼ä¸ç¼–è§£ç ç›¸å…³ä¿¡æ¯çš„ç»“æ„ä½“ã€‚
 */
 typedef struct FileContext {
     AVFormatContext* fmt;
@@ -45,7 +45,7 @@ typedef struct FileContext {
 
 
 /**
-* ·ÖÅäÒ»¸öĞÂµÄFileContext½á¹¹Ìå¡£Ê¹ÓÃ½áÊøºóĞèÒªµ÷ÓÃfile_freeÊÍ·Å¡£
+* åˆ†é…ä¸€ä¸ªæ–°çš„FileContextç»“æ„ä½“ã€‚ä½¿ç”¨ç»“æŸåéœ€è¦è°ƒç”¨file_freeé‡Šæ”¾ã€‚
 */
 FileContext* file_alloc()
 {
@@ -63,7 +63,7 @@ FileContext* file_alloc()
 
 
 /**
-* Çå¿ÕFileContext½á¹¹ÌåËù¹ØÁªµÄÄÚ´æ¡£
+* æ¸…ç©ºFileContextç»“æ„ä½“æ‰€å…³è”çš„å†…å­˜ã€‚
 */
 void file_free(FileContext** ctx)
 {
@@ -85,7 +85,7 @@ void file_free(FileContext** ctx)
 
 
 /**
-* ´ò¿ªÃ½ÌåÎÄ¼şÖĞµÄÊÓÆµÁ÷£¬·µ»ØFileContext½á¹¹ÌåÓÃÓÚºóĞø½âÂë¡£
+* æ‰“å¼€åª’ä½“æ–‡ä»¶ä¸­çš„è§†é¢‘æµï¼Œè¿”å›FileContextç»“æ„ä½“ç”¨äºåç»­è§£ç ã€‚
 */
 int read_video(FileContext** ctx, const char* filename, int thread_count)
 {
@@ -95,7 +95,7 @@ int read_video(FileContext** ctx, const char* filename, int thread_count)
     const AVCodec* codec;
     AVDictionary* opts = NULL;
 
-    // ÄÚ´æ·ÖÅä
+    // å†…å­˜åˆ†é…
     input_ctx = file_alloc();
     if (!input_ctx) {
         ret = AVERROR_BUFFER_TOO_SMALL;
@@ -103,7 +103,7 @@ int read_video(FileContext** ctx, const char* filename, int thread_count)
     }
     *ctx = input_ctx;
     
-    // ´ò¿ªÎÄ¼ş£¬¶ÁÈ¡¸ñÊ½Í·ÓëÁ÷ĞÅÏ¢
+    // æ‰“å¼€æ–‡ä»¶ï¼Œè¯»å–æ ¼å¼å¤´ä¸æµä¿¡æ¯
     ret = avformat_open_input(&input_ctx->fmt, filename, NULL, NULL);
     if (ret < 0) {
         printf("Fail to open input file.\n");
@@ -115,7 +115,7 @@ int read_video(FileContext** ctx, const char* filename, int thread_count)
         goto end;
     }
     
-    // Ñ¡ÔñÊÓÆµÁ÷£¬²¢³õÊ¼»¯ÏàÓ¦µÄ½âÂëÆ÷
+    // é€‰æ‹©è§†é¢‘æµï¼Œå¹¶åˆå§‹åŒ–ç›¸åº”çš„è§£ç å™¨
     stream_idx = av_find_best_stream(input_ctx->fmt, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
     if (stream_idx < 0) {
         printf("Fail to find video stream.\n");
@@ -140,7 +140,7 @@ end:
 
 
 /**
-* Ã¿´Îµ÷ÓÃ¶¼»á´ÓctxÖ¸¶¨µÄÊÓÆµÁ÷ÖĞ¶ÁÈ¡Ò»Ö¡²¢Ğ´Èëµ½frameÖĞ¡£ĞèÒªÒ»¸öAVPacketÀàĞÍµÄ»º´æ¡£
+* æ¯æ¬¡è°ƒç”¨éƒ½ä¼šä»ctxæŒ‡å®šçš„è§†é¢‘æµä¸­è¯»å–ä¸€å¸§å¹¶å†™å…¥åˆ°frameä¸­ã€‚éœ€è¦ä¸€ä¸ªAVPacketç±»å‹çš„ç¼“å­˜ã€‚
 */
 int decode(FileContext* ctx, AVFrame* frame, AVPacket* buffer)
 {
@@ -150,14 +150,14 @@ int decode(FileContext* ctx, AVFrame* frame, AVPacket* buffer)
         ret = avcodec_receive_frame(ctx->codec, frame);
         if (ret >= 0) {
             frame->pts = frame->best_effort_timestamp;
-            break;    // ³É¹¦¶ÁÈ¡Ò»Ö¡ºóÍË³ö
+            break;    // æˆåŠŸè¯»å–ä¸€å¸§åé€€å‡º
         }
         if (ret == AVERROR(EAGAIN)) {
-            av_packet_unref(buffer);    // Ğ´ÈëpacketÇ°×ÜÊÇÏÈÖØÖÃ»º´æ
-            // ¶ÁÈ¡Ô´ÎÄ¼ş
+            av_packet_unref(buffer);    // å†™å…¥packetå‰æ€»æ˜¯å…ˆé‡ç½®ç¼“å­˜
+            // è¯»å–æºæ–‡ä»¶
             ret = av_read_frame(ctx->fmt, buffer);
             if (ret >= 0 && buffer->stream_index == ctx->st->index || ret == AVERROR_EOF) {
-                // ½âÂë
+                // è§£ç 
                 ret = avcodec_send_packet(ctx->codec, buffer);
             }
         }
@@ -171,7 +171,7 @@ int decode(FileContext* ctx, AVFrame* frame, AVPacket* buffer)
 
 
 /**
-* °´¸ø¶¨¸ñÊ½ĞÂ½¨Ò»¸öGIFÎÄ¼ş£¬·µ»ØFileContext½á¹¹ÌåÓÃÓÚºóĞø±àÂë¡£
+* æŒ‰ç»™å®šæ ¼å¼æ–°å»ºä¸€ä¸ªGIFæ–‡ä»¶ï¼Œè¿”å›FileContextç»“æ„ä½“ç”¨äºåç»­ç¼–ç ã€‚
 */
 int write_gif(FileContext** ctx, const char* filename, int width, int height, \
     enum AVPixelFormat pixel_fmt, int thread_count)
@@ -184,9 +184,9 @@ int write_gif(FileContext** ctx, const char* filename, int width, int height, \
     AVCodecContext* codec_ctx;
     AVDictionary* opt = NULL;
     AVStream* stream;
-    AVRational time_base = { 1, 100 };    // gif¸ñÊ½Ê±¼ä»ùÄ¬ÈÏÎª100£¬ÇÒ²»¿É¸Ä±ä
+    AVRational time_base = { 1, 100 };    // gifæ ¼å¼æ—¶é—´åŸºé»˜è®¤ä¸º100ï¼Œä¸”ä¸å¯æ”¹å˜
 
-    // ÄÚ´æ·ÖÅä
+    // å†…å­˜åˆ†é…
     output_ctx = file_alloc();
     if (!output_ctx) {
         ret = AVERROR_BUFFER_TOO_SMALL;
@@ -194,23 +194,23 @@ int write_gif(FileContext** ctx, const char* filename, int width, int height, \
     }
     *ctx = output_ctx;
 
-    // ³õÊ¼»¯Êä³öÎÄ¼ş
+    // åˆå§‹åŒ–è¾“å‡ºæ–‡ä»¶
     ret = avformat_alloc_output_context2(&output_ctx->fmt, NULL, "gif", filename);
     if (ret < 0) {
-        printf("Fail to open output file.");
+        printf("Fail to open output file.\n");
         goto end;
     }
     fmt = output_ctx->fmt->oformat;
     if (!(fmt->flags & AVFMT_NOFILE)) {
-        // Èô·â×°¸ñÊ½ÒªÇó£¬ÔòÊÖ¶¯´ò¿ªÊä³öÎÄ¼ş
+        // è‹¥å°è£…æ ¼å¼è¦æ±‚ï¼Œåˆ™æ‰‹åŠ¨æ‰“å¼€è¾“å‡ºæ–‡ä»¶
         ret = avio_open(&output_ctx->fmt->pb, filename, AVIO_FLAG_WRITE);
         if (ret < 0) {
-            printf("Fail to open output file.");
+            printf("Fail to open output file.\n");
             goto end;
         }
     }	
 
-    // ²éÕÒ¼°ÅäÖÃ½âÂëÆ÷
+    // æŸ¥æ‰¾åŠé…ç½®è§£ç å™¨
     codec_id = fmt->video_codec;
     codec = avcodec_find_encoder(codec_id);
     codec_ctx = avcodec_alloc_context3(codec);
@@ -222,7 +222,7 @@ int write_gif(FileContext** ctx, const char* filename, int width, int height, \
         codec_ctx->time_base = time_base;
         codec_ctx->thread_count = thread_count;
         if (fmt->flags & AVFMT_GLOBALHEADER)
-            // ²¿·Ö¸ñÊ½Ê¹ÓÃÈ«¾ÖÁ÷±êÍ·£¬¶ø²»ÊÇ±»·Ö¸îµ½Ã¿¸ö¹Ø¼üÖ¡ÉÏ
+            // éƒ¨åˆ†æ ¼å¼ä½¿ç”¨å…¨å±€æµæ ‡å¤´ï¼Œè€Œä¸æ˜¯è¢«åˆ†å‰²åˆ°æ¯ä¸ªå…³é”®å¸§ä¸Š
             codec_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
     }
     ret = avcodec_open2(codec_ctx, codec, &opt);
@@ -232,7 +232,7 @@ int write_gif(FileContext** ctx, const char* filename, int width, int height, \
     }
     output_ctx->codec = codec_ctx;
 
-    // Ìí¼ÓÁ÷£¬²¢ÉèÖÃ¸ÃÁ÷µÄĞÅÏ¢
+    // æ·»åŠ æµï¼Œå¹¶è®¾ç½®è¯¥æµçš„ä¿¡æ¯
     stream = avformat_new_stream(output_ctx->fmt, codec);
     if (!stream) {
         printf("Fail to add media stream.\n");
@@ -254,19 +254,19 @@ end:
 
 
 /**
-* Ã¿´Îµ÷ÓÃ¶¼»á½«frame°üº¬µÄÒ»Ö¡Êı¾İĞ´ÈëctxÖ¸¶¨µÄÊä³öÎÄ¼şÖĞ¡£ĞèÒªÒ»¸öAVPacketÀàĞÍµÄ»º´æ¡£
+* æ¯æ¬¡è°ƒç”¨éƒ½ä¼šå°†frameåŒ…å«çš„ä¸€å¸§æ•°æ®å†™å…¥ctxæŒ‡å®šçš„è¾“å‡ºæ–‡ä»¶ä¸­ã€‚éœ€è¦ä¸€ä¸ªAVPacketç±»å‹çš„ç¼“å­˜ã€‚
 */
 int encode(FileContext* ctx, AVFrame* frame, AVPacket* buffer)
 {
     int ret;
 
-    // ±àÂë
+    // ç¼–ç 
     ret = avcodec_send_frame(ctx->codec, frame);
     if (ret >= 0) {
-        av_packet_unref(buffer);    // Ğ´ÈëpacketÇ°×ÜÊÇÏÈÖØÖÃ»º´æ
+        av_packet_unref(buffer);    // å†™å…¥packetå‰æ€»æ˜¯å…ˆé‡ç½®ç¼“å­˜
         ret = avcodec_receive_packet(ctx->codec, buffer);
         if (ret >= 0) {
-            // Ğ´ÈëÄ¿±êÎÄ¼ş
+            // å†™å…¥ç›®æ ‡æ–‡ä»¶
             ret = av_interleaved_write_frame(ctx->fmt, buffer);
         }
     }
@@ -281,7 +281,7 @@ int encode(FileContext* ctx, AVFrame* frame, AVPacket* buffer)
 
 
 /**
-* °üº¬Ò»Ì×¶ÀÁ¢¹ıÂËÍ¼µÄÂË¾µÏß³Ì½á¹¹Ìå¡£
+* åŒ…å«ä¸€å¥—ç‹¬ç«‹è¿‡æ»¤å›¾çš„æ»¤é•œçº¿ç¨‹ç»“æ„ä½“ã€‚
 */
 typedef struct FilterThreadContext {
     int id;
@@ -295,7 +295,7 @@ typedef struct FilterThreadContext {
 
 
 /**
-* Çå¿ÕFilterThreadContext½á¹¹ÌåËù¹ØÁªµÄÄÚ´æ¡£
+* æ¸…ç©ºFilterThreadContextç»“æ„ä½“æ‰€å…³è”çš„å†…å­˜ã€‚
 */
 void filter_free(FilterThreadContext** ctx)
 {
@@ -316,7 +316,7 @@ void filter_free(FilterThreadContext** ctx)
 
 
 /**
-* ÓÉ¸ø¶¨²ÎÊı´´½¨Ò»¸öĞÂµÄÂË¾µ½á¹¹Ìå¡£×¢ÒâÊ¹ÓÃ½áÊøºóĞèÒªµ÷ÓÃfilter_freeÀ´ÊÍ·ÅÄÚ´æ¡£
+* ç”±ç»™å®šå‚æ•°åˆ›å»ºä¸€ä¸ªæ–°çš„æ»¤é•œç»“æ„ä½“ã€‚æ³¨æ„ä½¿ç”¨ç»“æŸåéœ€è¦è°ƒç”¨filter_freeæ¥é‡Šæ”¾å†…å­˜ã€‚
 */
 int create_filter(FilterThreadContext** ctx, char** filters, int count, \
     char* buf_filter_args, enum AVPixelFormat sink_filter_pix_fmt)
@@ -327,7 +327,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
     enum AVPixelFormat pixel_fmts[] = {sink_filter_pix_fmt, AV_PIX_FMT_NONE};
     AVFilterInOut* inputs = NULL, * outputs = NULL;
 
-    // ÄÚ´æ·ÖÅä
+    // å†…å­˜åˆ†é…
     filter_ctx = (FilterThreadContext*)malloc(sizeof(FilterThreadContext));
     if (!filter_ctx) {
         ret = AVERROR_BUFFER_TOO_SMALL;
@@ -344,7 +344,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
         goto end;
     }
 
-    // ´´½¨Ô´¹ıÂËÆ÷ºÍ½ÓÊÕ¹ıÂËÆ÷
+    // åˆ›å»ºæºè¿‡æ»¤å™¨å’Œæ¥æ”¶è¿‡æ»¤å™¨
     buf_filter = avfilter_get_by_name("buffer");
     ret = avfilter_graph_create_filter(&filter_ctx->buf_filter, buf_filter, "buffer", buf_filter_args, NULL, filter_ctx->graph);
     sink_filter = avfilter_get_by_name("buffersink");
@@ -356,7 +356,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
         goto end;
     }
 
-    // ´´½¨¹ıÂËÆ÷Á´½Ó±í
+    // åˆ›å»ºè¿‡æ»¤å™¨é“¾æ¥è¡¨
     outputs = avfilter_inout_alloc();
     inputs = avfilter_inout_alloc();
     if (outputs && inputs) {
@@ -375,7 +375,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
         goto end;
     }
 
-    // ½âÎö¹ıÂËÆ÷×Ö·û´®£¬²¢Ìí¼Ó¹ıÂËÆ÷
+    // è§£æè¿‡æ»¤å™¨å­—ç¬¦ä¸²ï¼Œå¹¶æ·»åŠ è¿‡æ»¤å™¨
     for (int i = 0; i < count; i++) {
         ret = avfilter_graph_parse_ptr(filter_ctx->graph, filters[i], &inputs, &outputs, NULL);
         if (ret < 0) {
@@ -384,7 +384,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
         }
     }
 
-    // ÑéÖ¤¹ıÂËÆ÷Á´½Ó
+    // éªŒè¯è¿‡æ»¤å™¨é“¾æ¥
     ret = avfilter_graph_config(filter_ctx->graph, NULL);
     if (ret < 0) {
         printf("Fail to verify filter graph.\n");
@@ -410,7 +410,7 @@ void* filting(void* arg)
             if (*td->flag == -1) {
                 pthread_exit(NULL);
             }
-            Sleep(WAIT_TIME);    // µ±flag²»Îª¡À1Ê±µÈ´ı
+            Sleep(WAIT_TIME);    // å½“flagä¸ä¸ºÂ±1æ—¶ç­‰å¾…
         };
 #ifdef DEBUG
         printf("Filt-%d:  Receive\n", td->id);
@@ -419,11 +419,11 @@ void* filting(void* arg)
         ret = av_buffersrc_add_frame(td->buf_filter, td->frame);
         ret = av_buffersink_get_frame(td->sink_filter, td->frame);
         if (ret >= 0) {
-            td->frame->pts = (int64_t)(td->pts_factor * pts);    // ÊÖ¶¯ÉèÖÃÊ±¼ä´Á
+            td->frame->pts = (int64_t)(td->pts_factor * pts);    // æ‰‹åŠ¨è®¾ç½®æ—¶é—´æˆ³
         }
         *td->flag = ret;
 #ifdef DEBUG
-        printf("Filt-%d:  %s (%d)\n", td->id, av_err2str(ret), ret);
+        printf("Filt-%d: frame %I64d - %s (%d)\n", td->id, td->frame->pts, av_err2str(ret), ret);
 #endif
         };
     
@@ -432,7 +432,7 @@ void* filting(void* arg)
 
 
 /**
-* ÓÃÓÚ´«µİgif×ªÂëÅäÖÃµÄ±ãÀû½á¹¹Ìå¡£
+* ç”¨äºä¼ é€’gifè½¬ç é…ç½®çš„ä¾¿åˆ©ç»“æ„ä½“ã€‚
 */
 typedef struct ConfigureData {
     float scale;
@@ -444,7 +444,7 @@ typedef struct ConfigureData {
 
 
 /**
-* ´ÓÎÄ¼şÖĞ¶ÁÈ¡×ªÂëÅäÖÃ¡£ÈôÎÄ¼ş²»´æÔÚ£¬Ôò½«ÅäÖÃĞ´³öÖÁĞÂÎÄ¼ş¡£
+* ä»æ–‡ä»¶ä¸­è¯»å–è½¬ç é…ç½®ã€‚è‹¥æ–‡ä»¶ä¸å­˜åœ¨ï¼Œåˆ™å°†é…ç½®å†™å‡ºè‡³æ–°æ–‡ä»¶ã€‚
 */
 int read_config(ConfigureData* config, const char* ini_file)
 {
@@ -496,7 +496,7 @@ end:
 
 
 /**
-* °´ÕÕconfigÖ¸¶¨µÄÅäÖÃ£¬½«ÊÓÆµÎÄ¼şsrc×ª»»ÎªGIF¸ñÊ½µÄĞÂÎÄ¼şdst¡£
+* æŒ‰ç…§configæŒ‡å®šçš„é…ç½®ï¼Œå°†è§†é¢‘æ–‡ä»¶srcè½¬æ¢ä¸ºGIFæ ¼å¼çš„æ–°æ–‡ä»¶dstã€‚
 */
 int video2gif(const char* src, const char* dst, ConfigureData* config)
 {
@@ -513,7 +513,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
     char* filter_list[FILTER_N] = { NULL };
     enum AVPixelFormat pixel_fmt = AV_PIX_FMT_PAL8;
 
-    // ´ò¿ªÊäÈëÎÄ¼ş
+    // æ‰“å¼€è¾“å…¥æ–‡ä»¶
     ret = read_video(&input, src, config->thread);
     if (ret < 0) {
         goto end;
@@ -521,7 +521,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
     av_dump_format(input->fmt, input->st->index, src, 0);
     printf("\n");
 
-    // ÉèÖÃÂË¾µÊäÈë¶Ë²ÎÊı
+    // è®¾ç½®æ»¤é•œè¾“å…¥ç«¯å‚æ•°
     snprintf(filter_args, sizeof(filter_args), \
         "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d", \
         input->codec->width, input->codec->height, input->codec->pix_fmt, input->st->time_base.num, \
@@ -530,7 +530,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
     printf("\nFilter Input:\n%s\n", filter_args);
 #endif
 
-    // ÉèÖÃÂË¾µµÄÃèÊö×Ö·û´®
+    // è®¾ç½®æ»¤é•œçš„æè¿°å­—ç¬¦ä¸²
     for (int i = 0; i < FILTER_N; i++) {
         filter_list[i] = (char*)malloc(MAX_FILTER_LENTH * sizeof(char));
         if (!filter_list[i]) {
@@ -550,7 +550,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
         printf("%s\n", filter_list[i]);
 #endif
 
-    // ´´½¨ÂË¾µ
+    // åˆ›å»ºæ»¤é•œ
     filter = (FilterThreadContext**)calloc(config->thread, sizeof(FilterThreadContext*));
     if (!filter) {
         ret = AVERROR_BUFFER_TOO_SMALL;
@@ -566,7 +566,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
     printf("\nFilter Graph:\n%s\n", avfilter_graph_dump(filter[0]->graph, NULL));
 #endif
     
-    // ´ò¿ªÊä³öÎÄ¼ş
+    // æ‰“å¼€è¾“å‡ºæ–‡ä»¶
     ret = write_gif(&output, dst, (*filter[0]->sink_filter->inputs)->w, (*filter[0]->sink_filter->inputs)->h, \
         pixel_fmt, config->thread);
     if (ret < 0) {
@@ -576,7 +576,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
     av_dump_format(output->fmt, 0, dst, 1);
     printf("\n");
 
-    // ÉèÖÃÂË¾µ½á¹¹ÌåµÄÆäËû²ÎÊı
+    // è®¾ç½®æ»¤é•œç»“æ„ä½“çš„å…¶ä»–å‚æ•°
     pts_factor = (double)output->codec->time_base.den / ((double)config->speed * input->st->time_base.den);
     for (int i = 0; i < config->thread; i++) {
         filter[i]->id = i;
@@ -584,7 +584,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
         *filter[i]->flag = AVERROR(EAGAIN);
     }
 
-    // ÄÚ´æ·ÖÅä
+    // å†…å­˜åˆ†é…
     packet = av_packet_alloc();
     frame = av_frame_alloc();
     frame_tmp = av_frame_alloc();
@@ -598,14 +598,14 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
         goto end;
     }
 
-    // ´´½¨ÂË¾µÏß³Ì
+    // åˆ›å»ºæ»¤é•œçº¿ç¨‹
     for (int i = 0; i < config->thread; i++) {
         pthread_create(&threads[i], NULL, filting, (void*)filter[i]);
     }
 
     ret = avformat_write_header(output->fmt, NULL);
 
-    // ½âÂë-ÂË¾µ-±àÂë Ö÷Ñ­»·
+    // è§£ç -æ»¤é•œ-ç¼–ç  ä¸»å¾ªç¯
     pts_interval = (double)output->codec->time_base.den / (pts_factor * config->fps);
 #ifdef DEBUG
     printf("pts_factor: %.3f; pts_offset: %.3f; pts_interval: %.3f\n\n", pts_factor, pts_offset, pts_interval);
@@ -624,9 +624,9 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
                     av_frame_move_ref(filter[t_ptr]->frame, frame);
                     av_frame_move_ref(frame, frame_tmp);
 #ifdef DEBUG
-                    printf("Exchange frame with thread-%d)\n", t_ptr);
+                    printf("Exchange frame with thread-%d\n", t_ptr);
 #endif
-                    *filter[t_ptr]->flag = 1;    // Í¨ÖªÏß³Ì½øĞĞÖ¡´¦Àí
+                    *filter[t_ptr]->flag = 1;    // é€šçŸ¥çº¿ç¨‹è¿›è¡Œå¸§å¤„ç†
                     if (flag == 0) {
                         ret = encode(output, frame, packet);
                     }
@@ -639,7 +639,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
         }
         else {
             if (flag != -1) {
-                *filter[t_ptr]->flag = -1;    // ±ê¼ÇÂË¾µÎªÒÑ¹Ø±Õ
+                *filter[t_ptr]->flag = -1;    // æ ‡è®°æ»¤é•œä¸ºå·²å…³é—­
                 if (flag == 0) {
                     av_frame_unref(frame);
                     av_frame_move_ref(frame, filter[t_ptr]->frame);
@@ -650,7 +650,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
                 ret = encode(output, NULL, packet);
             }
         }
-        // Ïß³ÌÖ¸ÕëÑ­»·
+        // çº¿ç¨‹æŒ‡é’ˆå¾ªç¯
         if (t_ptr < config->thread - 1) {
             t_ptr++;
         }
@@ -659,13 +659,15 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
         }
     } while (ret >= 0 || ret == AVERROR(EAGAIN));
     if (ret != AVERROR_EOF) {
+        for (int i = 0; i < config->thread; i++)
+            *filter[i]->flag = -1;
         printf("Error occurred when precessing.\n");
         goto end;
     }
 
     ret = av_write_trailer(output->fmt);
 
-    // ÊÍ·ÅÄÚ´æ
+    // é‡Šæ”¾å†…å­˜
 end:
     if (packet)
         av_packet_free(&packet);
@@ -703,7 +705,7 @@ end:
 
 
 /**
-* ÉèÖÃ´°¿Ú±êÌâ£¬Í¬Ê±½«¹¤×÷Â·¾¶ĞŞ¸ÄÎª³ÌĞòËùÔÚµÄÎÄ¼ş¼Ğ¡£
+* è®¾ç½®çª—å£æ ‡é¢˜ï¼ŒåŒæ—¶å°†å·¥ä½œè·¯å¾„ä¿®æ”¹ä¸ºç¨‹åºæ‰€åœ¨çš„æ–‡ä»¶å¤¹ã€‚
 */
 void set_default_path()
 {
@@ -718,7 +720,7 @@ void set_default_path()
 
 
 /**
-* ±ãÀûº¯Êı£¬·µ»Ø½«Ô­ÎÄ¼şµÄºó×ºĞŞ¸ÄÎª.gifºóµÄĞÂÂ·¾¶¡£
+* ä¾¿åˆ©å‡½æ•°ï¼Œè¿”å›å°†åŸæ–‡ä»¶çš„åç¼€ä¿®æ”¹ä¸º.gifåçš„æ–°è·¯å¾„ã€‚
 */
 const char* gif_path(const char* path)
 {
@@ -733,9 +735,33 @@ const char* gif_path(const char* path)
 }
 
 
+/**
+* å°†å­—ç¬¦é›†ç”±ANSIIè½¬ä¸ºUTF8ï¼Œä»¥è§£å†³ä¸­æ–‡è·¯å¾„é—®é¢˜ã€‚
+*/
+int A2U(const char* ansiiCode, char* utf8Code)
+{
+    int cbAnsii, cchUnicode, cbUtf8 = 0;
+    WCHAR* Unicode;
+    
+    cbAnsii = (int)(strlen(ansiiCode) * sizeof(char));
+    cchUnicode = MultiByteToWideChar(CP_ACP, 0, ansiiCode, cbAnsii, NULL, 0);
+    Unicode = (WCHAR*)malloc(cchUnicode * sizeof(WCHAR));
+    if (Unicode) {
+        MultiByteToWideChar(CP_ACP, 0, ansiiCode, cbAnsii, Unicode, cchUnicode);
+        cbUtf8 = (int)((MAX_PATH_LENGTH - 1) * sizeof(char));
+        cbUtf8 = WideCharToMultiByte(CP_UTF8, 0, Unicode, cchUnicode, utf8Code, cbUtf8, NULL, NULL);
+        utf8Code[cbUtf8 / sizeof(char)] = '\0';
+        free(Unicode);
+    }
+
+    return cbUtf8;
+}
+
+
 int main(int argc, char** argv)
 {
     int ret = 0;
+    char srcPath[MAX_PATH_LENGTH], dstPath[MAX_PATH_LENGTH];
     ConfigureData config = {
         .scale = 1.0,
         .speed = 1.0,
@@ -759,7 +785,9 @@ int main(int argc, char** argv)
     for (int i = 1; i < argc; i++) {
         printf("%d\n------------------------------------------------------------\n", i);
         if (!_access(argv[i], 4)) {
-            ret = video2gif(argv[i], gif_path(argv[i]), &config);
+            A2U(argv[i], srcPath);
+            A2U(gif_path(argv[i]), dstPath);
+            ret = video2gif(srcPath, dstPath, &config);
         }
         else {
             printf("File doesn't exist or access denied. (%s)\n", argv[i]);
