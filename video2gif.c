@@ -728,7 +728,10 @@ const char* gif_path(const char* path)
     static char new_path[MAX_PATH_LENGTH] = { 0 };
 
     suffix = strrchr(path, '.');
-    strncpy_s(new_path, MAX_PATH_LENGTH, path, strlen(path) - strlen(suffix));
+    if (suffix)
+        strncpy_s(new_path, MAX_PATH_LENGTH, path, strlen(path) - strlen(suffix));
+    else
+        strcpy_s(new_path, MAX_PATH_LENGTH, path);
     strcat_s(new_path, MAX_PATH_LENGTH, ".gif");
 
     return new_path;
@@ -740,17 +743,15 @@ const char* gif_path(const char* path)
 */
 int A2U(const char* ansiiCode, char* utf8Code)
 {
-    int cbAnsii, cchUnicode, cbUtf8 = 0;
+    int cchUnicode, cbUtf8 = 0;
     WCHAR* Unicode;
     
-    cbAnsii = (int)(strlen(ansiiCode) * sizeof(char));
-    cchUnicode = MultiByteToWideChar(CP_ACP, 0, ansiiCode, cbAnsii, NULL, 0);
+    cchUnicode = MultiByteToWideChar(CP_ACP, 0, ansiiCode, (int)strlen(ansiiCode), NULL, 0);
     Unicode = (WCHAR*)malloc(cchUnicode * sizeof(WCHAR));
     if (Unicode) {
-        MultiByteToWideChar(CP_ACP, 0, ansiiCode, cbAnsii, Unicode, cchUnicode);
-        cbUtf8 = (int)((MAX_PATH_LENGTH - 1) * sizeof(char));
-        cbUtf8 = WideCharToMultiByte(CP_UTF8, 0, Unicode, cchUnicode, utf8Code, cbUtf8, NULL, NULL);
-        utf8Code[cbUtf8 / sizeof(char)] = '\0';
+        MultiByteToWideChar(CP_ACP, 0, ansiiCode, (int)strlen(ansiiCode), Unicode, cchUnicode);
+        cbUtf8 = WideCharToMultiByte(CP_UTF8, 0, Unicode, cchUnicode, utf8Code, MAX_PATH_LENGTH - 1, NULL, NULL);
+        utf8Code[cbUtf8] = '\0';
         free(Unicode);
     }
 
