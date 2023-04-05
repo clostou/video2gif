@@ -10,7 +10,7 @@
 //
 //  Creation Date: 2023/3/5
 //
-//  Last Modified: 2023/3/26
+//  Last Modified: 2023/3/31
 //
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -73,8 +73,8 @@ void file_free(FileContext** ctx)
         }
         (*ctx)->st = NULL;
         if ((*ctx)->fmt) {
-            if ((*ctx)->fmt->oformat && ((*ctx)->fmt->oformat->flags & AVFMT_NOFILE)) {
-                avio_close((*ctx)->fmt->pb);
+            if ((*ctx)->fmt->oformat && !((*ctx)->fmt->oformat->flags & AVFMT_NOFILE)) {
+                avio_closep(&(*ctx)->fmt->pb);
             }
             avformat_close_input(&(*ctx)->fmt);
         }
@@ -98,7 +98,7 @@ int read_video(FileContext** ctx, const char* filename, int thread_count)
     // 内存分配
     input_ctx = file_alloc();
     if (!input_ctx) {
-        ret = AVERROR_BUFFER_TOO_SMALL;
+        ret = AVERROR(ENOMEM);
         goto end;
     }
     *ctx = input_ctx;
@@ -111,7 +111,7 @@ int read_video(FileContext** ctx, const char* filename, int thread_count)
     }
     ret = avformat_find_stream_info(input_ctx->fmt, NULL);
     if (ret < 0) {
-        printf("Fail to parse stream information.\n");
+        printf("Fail to retrieve stream information.\n");
         goto end;
     }
     
@@ -189,7 +189,7 @@ int write_gif(FileContext** ctx, const char* filename, int width, int height, \
     // 内存分配
     output_ctx = file_alloc();
     if (!output_ctx) {
-        ret = AVERROR_BUFFER_TOO_SMALL;
+        ret = AVERROR(ENOMEM);
         goto end;
     }
     *ctx = output_ctx;
@@ -330,7 +330,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
     // 内存分配
     filter_ctx = (FilterThreadContext*)malloc(sizeof(FilterThreadContext));
     if (!filter_ctx) {
-        ret = AVERROR_BUFFER_TOO_SMALL;
+        ret = AVERROR(ENOMEM);
         goto end;
     }
     *ctx = filter_ctx;
@@ -340,7 +340,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
     filter_ctx->sink_filter = NULL;
     filter_ctx->flag = (int*)malloc(sizeof(int));
     if (!filter_ctx->frame || !filter_ctx->graph || !filter_ctx->flag) {
-        ret = AVERROR_BUFFER_TOO_SMALL;
+        ret = AVERROR(ENOMEM);
         goto end;
     }
 
@@ -352,7 +352,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
     ret = av_opt_set_int_list(filter_ctx->sink_filter, "pix_fmts", pixel_fmts, AV_PIX_FMT_NONE, AV_OPT_SEARCH_CHILDREN);
     if (ret < 0 || !filter_ctx->buf_filter || !filter_ctx->sink_filter) {
         printf("Fail to initialize filter graph.\n");
-        if (ret >= 0) ret = AVERROR_BUFFER_TOO_SMALL;
+        if (ret >= 0) ret = AVERROR(ENOMEM);
         goto end;
     }
 
@@ -371,7 +371,7 @@ int create_filter(FilterThreadContext** ctx, char** filters, int count, \
     }
     else {
         printf("Fail to initialize filter graph.\n");
-        ret = AVERROR_BUFFER_TOO_SMALL;
+        ret = AVERROR(ENOMEM);
         goto end;
     }
 
@@ -534,7 +534,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
     for (int i = 0; i < FILTER_N; i++) {
         filter_list[i] = (char*)malloc(MAX_FILTER_LENTH * sizeof(char));
         if (!filter_list[i]) {
-            ret = AVERROR_BUFFER_TOO_SMALL;
+            ret = AVERROR(ENOMEM);
             goto end;
         }
     }
@@ -553,7 +553,7 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
     // 创建滤镜
     filter = (FilterThreadContext**)calloc(config->thread, sizeof(FilterThreadContext*));
     if (!filter) {
-        ret = AVERROR_BUFFER_TOO_SMALL;
+        ret = AVERROR(ENOMEM);
         goto end;
     }
     for (int i = 0; i < config->thread; i++) {
@@ -589,12 +589,12 @@ int video2gif(const char* src, const char* dst, ConfigureData* config)
     frame = av_frame_alloc();
     frame_tmp = av_frame_alloc();
     if (!packet || !frame || !frame_tmp) {
-        ret = AVERROR_BUFFER_TOO_SMALL;
+        ret = AVERROR(ENOMEM);
         goto end;
     }
     threads = (pthread_t*)malloc(config->thread * sizeof(pthread_t));
     if (!threads) {
-        ret = AVERROR_BUFFER_TOO_SMALL;
+        ret = AVERROR(ENOMEM);
         goto end;
     }
 

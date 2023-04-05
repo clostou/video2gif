@@ -9,6 +9,7 @@ BEGIN
 	BEGIN
 		BLOCK"080404b0"
 		BEGIN
+            VALUE "CompanyName", "Yangwang (GitHub@clostou)"
             VALUE "FileDescription", "GIF×ªÂë¹¤¾ß"
             VALUE "FileVersion", "0.1.0.1"
             VALUE "InternalName", "video2gif.exe"
