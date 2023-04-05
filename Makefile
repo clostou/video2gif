@@ -7,7 +7,7 @@ PROG_EXE = bin/$(PROG)
 
 CC = gcc
 #-lavformat -lavdevice -lavfilter -lavcodec -lavutil -pthread -ldl -lpostproc -lswresample -lswscale -lbz2 -lz -lm
-CLIBSFLAGS = -lavformat -lavfilter -lavcodec -lavutil -lpostproc -lswresample -lswscale -lbcrypt -pthread -static
+CLIBSFLAGS = -lavformat -lavfilter -lavcodec -lavutil -lswscale -lbcrypt -pthread -static
 CFLAGS = -Iinclude/
 LDFLAGS = -Llib/
 
